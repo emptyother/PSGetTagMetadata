@@ -55,10 +55,7 @@ namespace OnlyHuman.PSGetTagMetadata
 		}
 
 		[Parameter(
-			Position = 1,
-			Mandatory = false,
-			ValueFromPipeline = false,
-			ValueFromPipelineByPropertyName = true
+			Position = 1
 		)]
 		public string OutputPath { get; set; } = Directory.GetCurrentDirectory();
 
@@ -125,12 +122,16 @@ namespace OnlyHuman.PSGetTagMetadata
 				IShellLink link = (IShellLink)new ShellLink();
 
 				// setup shortcut information
-				link.SetDescription(file.Name);
-				link.SetPath(file.FullName);
+				link.SetDescription("No description.");
+				link.SetPath(@file.FullName);
 
 				// save it
 				IPersistFile newfile = (IPersistFile)link;
-				var newpath = System.IO.Path.Combine(OutputPath, $"{file.Name}.lnk");
+				WriteVerbose($"Outputpath = {OutputPath}");
+				var fullOutputPath = System.IO.Path.GetFullPath(OutputPath);
+				WriteVerbose($"OutputpathFull = {fullOutputPath}");
+				var newpath = System.IO.Path.Combine(fullOutputPath, $"{file.Name}.lnk");
+				WriteVerbose($"Saving shortcut to {newpath}");
 				newfile.Save(newpath, false);
 
 				return new FileInfo(newpath);
