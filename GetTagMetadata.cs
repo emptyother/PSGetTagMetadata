@@ -95,26 +95,23 @@ namespace OnlyHuman.PSGetTagMetadata
 		internal Collection<PathInfo> ResolvePaths(
 			string[] pathsToResolve,
 			bool allowNonexistingPaths,
-			bool allowEmptyResult)
+			bool allowEmptyResult
+		)
 		{
 			Collection<PathInfo> results = new();
 
 			foreach (string path in pathsToResolve)
 			{
-				bool pathNotFound = false;
+				var pathNotFound = false;
 				ErrorRecord pathNotFoundErrorRecord = null;
 				try
 				{
 					// First resolve each of the paths
-					Collection<PathInfo> pathInfos =
-						SessionState.Path.GetResolvedPSPathFromPSPath(
-							path);
-
+					var pathInfos = SessionState.Path.GetResolvedPSPathFromPSPath( path);
 					if (pathInfos.Count == 0)
 					{
 						pathNotFound = true;
 					}
-
 					foreach (PathInfo pathInfo in pathInfos)
 					{
 						results.Add(pathInfo);
@@ -122,37 +119,27 @@ namespace OnlyHuman.PSGetTagMetadata
 				}
 				catch (PSNotSupportedException notSupported)
 				{
-					WriteError(
-						new ErrorRecord(
-							notSupported.ErrorRecord,
-							notSupported));
+					WriteError( new ErrorRecord( notSupported.ErrorRecord, notSupported));
 				}
 				catch (DriveNotFoundException driveNotFound)
 				{
-					WriteError(
-						new ErrorRecord(
-							driveNotFound.ErrorRecord,
-							driveNotFound));
+					WriteError( new ErrorRecord( driveNotFound.ErrorRecord, driveNotFound));
 				}
 				catch (ProviderNotFoundException providerNotFound)
 				{
-					WriteError(
-						new ErrorRecord(
-							providerNotFound.ErrorRecord,
-							providerNotFound));
+					WriteError( new ErrorRecord( providerNotFound.ErrorRecord, providerNotFound));
 				}
 				catch (ItemNotFoundException pathNotFoundException)
 				{
 					pathNotFound = true;
 					pathNotFoundErrorRecord = new ErrorRecord(pathNotFoundException.ErrorRecord, pathNotFoundException);
 				}
-
 				if (pathNotFound)
 				{
 					if (pathNotFoundErrorRecord == null)
 					{
 						// Detect if the path resolution failed to resolve to a file.
-						string error = $"Item not found: {path}";
+						var error = $"Item not found: {path}";
 						Exception e = new(error);
 						pathNotFoundErrorRecord = new ErrorRecord(e, "ItemNotFound", ErrorCategory.ObjectNotFound, Path);
 						WriteError(pathNotFoundErrorRecord);
@@ -176,9 +163,7 @@ namespace OnlyHuman.PSGetTagMetadata
 			{
 				paths.Add(pathInfo.Path);
 			}
-
 			return paths.ToArray();
 		}
-
 	}
 }
