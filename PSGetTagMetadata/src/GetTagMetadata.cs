@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Management.Automation;
-using System.Management.Automation.Internal;
-using System.Management.Automation.Provider;
-using System.Management.Automation.Runspaces;
 using Microsoft.PowerShell.Commands;
 
 namespace OnlyHuman.PSGetTagMetadata
@@ -14,9 +10,13 @@ namespace OnlyHuman.PSGetTagMetadata
 	public class Get_TagMetadata : PSCmdlet
 	{
 		private const string Noun = "FileMetadata";
+
 		private const string ParamSetLiteral = "Literal";
+
 		private const string ParamSetPath = "Path";
+
 		private string[] _paths;
+
 		private bool _shouldExpandWildcards;
 		[Parameter(
 			Mandatory = true,
@@ -24,6 +24,7 @@ namespace OnlyHuman.PSGetTagMetadata
 			ValueFromPipelineByPropertyName = true,
 			ParameterSetName = ParamSetLiteral)
 		]
+
 		[Alias("PSPath")]
 		[ValidateNotNullOrEmpty]
 		public string[] LiteralPath
@@ -31,6 +32,7 @@ namespace OnlyHuman.PSGetTagMetadata
 			get { return _paths; }
 			set { _paths = value; }
 		}
+
 		[Parameter(
 			Position = 0,
 			Mandatory = true,
@@ -48,6 +50,7 @@ namespace OnlyHuman.PSGetTagMetadata
 				_paths = value;
 			}
 		}
+
 		protected override void ProcessRecord()
 		{
 			foreach (string path in _paths)
@@ -69,8 +72,7 @@ namespace OnlyHuman.PSGetTagMetadata
 				else
 				{
 					// no wildcards, so don't try to expand any * or ? symbols.
-					filePaths.Add(this.SessionState.Path.GetUnresolvedProviderPathFromPSPath(
-						path, out provider, out drive));
+					filePaths.Add(this.SessionState.Path.GetUnresolvedProviderPathFromPSPath(path, out provider, out drive));
 				}
 				// ensure that this path (or set of paths after wildcard expansion)
 				// is on the filesystem. A wildcard can never expand to span multiple
@@ -105,6 +107,7 @@ namespace OnlyHuman.PSGetTagMetadata
 				}
 			}
 		}
+
 		private PSObject GetFileCustomObject(FileInfo file)
 		{
 			// this message will be shown if the -verbose switch is given
@@ -116,6 +119,7 @@ namespace OnlyHuman.PSGetTagMetadata
 			custom.Properties.Add(new PSNoteProperty("Extension", file.Extension));
 			return custom;
 		}
+
 		private PSObject GetDirectoryCustomObject(DirectoryInfo dir)
 		{
 			// this message will be shown if the -verbose switch is given
@@ -129,6 +133,7 @@ namespace OnlyHuman.PSGetTagMetadata
 			custom.Properties.Add(new PSNoteProperty("Name", dir.Name));
 			return custom;
 		}
+
 		private bool IsFileSystemPath(ProviderInfo provider, string path)
 		{
 			bool isFileSystem = true;
